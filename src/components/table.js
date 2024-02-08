@@ -6,7 +6,7 @@ import {
 import { createSelector } from 'reselect';
 import Barcode from 'react-barcode';
 import { dateTime } from '../utils/date-formats';
-
+import { Info } from '@mui/icons-material';
 import {
   Table as MUITable,
   TableContainer,
@@ -17,7 +17,9 @@ import {
   TableCell,
   Checkbox,
   Box,
-  Paper
+  Paper,
+  Tooltip,
+  IconButton
 } from '@mui/material';
 import {
   setTablePageAction,
@@ -84,10 +86,30 @@ const RenderTableHead = ({
 
 const RenderRows = ({ row, header, rowActions }) => {
   if (!row[header.rowId] && header.type !== 'actions') {
+    if (header.type === 'status' && row.generate_barcode_api_respose != 'OK' && row.generate_barcode_api_respose != null ) {
+      const color = row.generate_barcode_api_respose != 'OK' ? 'red' : 'white';
+      return <>
+        <Tooltip title={row.generate_barcode_api_respose}>
+          <IconButton sx={{ color }}>
+            <Info />
+          </IconButton>
+        </Tooltip>
+      </>;
+    }
     return '--';
   } else if (header.type === 'datetime') {
     return dateTime(row[header.rowId]);
   } else if (header.type === 'status') {
+    if (row[header.rowId].toUpperCase() === 'FAILED') {
+      const color = row.generate_barcode_api_respose != 'OK' ? 'red' : 'white';
+      return <>
+        <Tooltip title={row.generate_barcode_api_respose}>
+          <IconButton sx={{ color }}>
+            <Info />
+          </IconButton>
+        </Tooltip>
+      </>;
+    }
     return <>
       <StatusChip {...{ label: row[header.rowId].toUpperCase() }}/>
     </>;
@@ -99,6 +121,8 @@ const RenderRows = ({ row, header, rowActions }) => {
     return <>
       {rowActions(row)}
     </>;
+  } else if (header.type === 'error') {
+    return '';
   } else {
     return row[header.rowId];
   }

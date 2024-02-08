@@ -22,6 +22,9 @@ const StatusChip = ({ label }) => {
     case participantsStatus.REFUNDED:
       color = 'error';
       break;
+    case participantsStatus.PENDING:
+      color = 'warning';
+      break;
     default:
       color = 'primary';
   }
